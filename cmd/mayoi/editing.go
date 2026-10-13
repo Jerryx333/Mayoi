@@ -467,8 +467,11 @@ func (a *app) editorKey(d *editor, ev ui.InputEvent) bool {
 		// A swipe mostly sideways moves the text sideways only, as in VS
 		// Code: the text area would take the whole of it for the little it
 		// goes down, and the text stop and drift.
-		d.hscroll.X = max(0, min(d.hscroll.X+ev.DX, d.hscroll.MaxX))
-		a.invalidate()
+		// Taken at an edge too, or wrapped, so that the text stays put.
+		if x := max(0, min(d.hscroll.X+ev.DX, d.hscroll.MaxX)); x != d.hscroll.X {
+			d.hscroll.X = x
+			a.invalidate()
+		}
 		return true
 	}
 	if ev.Kind == ui.InputPointerDown && ev.Button == 0 && len(d.sticky) > 0 && a.font.lineH > 0 {
